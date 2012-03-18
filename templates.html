@@ -1,0 +1,38 @@
+{{define "Header"}}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>{{.Title |html}} // GO-Web Framework</title>
+
+	<meta name="keywords" content="{{.Keywords |html}}">
+	<meta name="description" content="{{.Description |html}}">
+
+	<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+	<div id="container" class="clearfix">
+		<header class="clearfix">
+			<h1><a href="/" title="GO-Web Framework">GO-Web Framework</a></h1>
+			{{template "Nav"}}
+		</header>
+{{end}}
+
+{{define "Nav"}}
+		<nav>
+			<ul class="clearfix">
+				<li><a href="/" title="Home">Home</a></li>
+				<li><a href="/about" title="About">About</a></li>
+				<li><a href="/license" title="License">License</a></li>
+			</ul>
+		</nav>
+{{end}}
+
+{{define "Footer"}}
+		<footer>
+			Powered by <a href="https://github.com/matt-west/go-web" title="GO-Web" target="_blank">GO-Web</a>
+		</footer>
+	</div>
+</body>
+</html>
+{{end}}
