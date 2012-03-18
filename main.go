@@ -17,15 +17,17 @@ type Page struct {
 type Post struct {
 	Title       string
 	Slug        string
-	Date				string
+	Date        string
 	Keywords    string
 	Description string
-	Tags				[]string
+	Tags        []string
 }
 
 const assetPath = len("/")
 const pagePath = len("/page/")
 const postPath = len("/")
+
+const maxPosts = 2 // Number posts to display on homepage
 
 // Pages
 var pages = make(map[string]*Page)
@@ -33,6 +35,7 @@ var pageTemplates = make(map[string]*template.Template)
 
 // Posts
 var posts = make(map[string]*Post)
+var postsJSON []Post // Need this so that there is an ordered list of posts
 var postTemplates = make(map[string]*template.Template)
 
 // Templates
@@ -54,10 +57,8 @@ func init() {
 		pages[pagesJSON[i].Slug] = &pagesJSON[i]
 	}
 
-
 	// Parse Posts JSON Dict
 	postsRaw, _ := ioutil.ReadFile("posts/posts.json")
-	var postsJSON []Post
 	err = json.Unmarshal(postsRaw, &postsJSON)
 	if err != nil {
 		panic("Could not parse Posts JSON!")
@@ -67,7 +68,6 @@ func init() {
 	for i := 0; i < len(postsJSON); i++ {
 		posts[postsJSON[i].Slug] = &postsJSON[i]
 	}
-
 
 	// Parse and Cache Page Templates
 	for _, tmpl := range pages {
@@ -164,13 +164,32 @@ func assetHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, r.URL.Path[assetPath:])
 }
 
+func archiveHandler(w http.ResponseWriter, r *http.Request) {
+	p := Page{"archive", "Archive", "", ""}
+
+	// Header
+	layoutTemplates.Execute(w, "Header", p)
+
+	// Archives
+	layoutTemplates.Execute(w, "Archive", postsJSON)
+
+	// Footer
+	layoutTemplates.Execute(w, "Footer", p)
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	p := pages["index"]
 
 	// Header
 	layoutTemplates.Execute(w, "Header", p)
 
-	// TODO Loop Each Post
+	// Show Recent Posts
+	for i, tmpl := range postsJSON {
+		if i >= maxPosts {
+			break
+		}
+		postTemplates[tmpl.Slug].Execute(w, nil)
+	}
 
 	// Footer
 	layoutTemplates.Execute(w, "Footer", p)
@@ -178,6 +197,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 // Starts Server and Routes Requests
 func main() {
+	http.HandleFunc("/archive", archiveHandler)
 	http.HandleFunc("/page/", pageHandler)
 	http.HandleFunc("/assets/", assetHandler)
 	http.HandleFunc("/", postHandler)

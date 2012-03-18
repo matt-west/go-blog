@@ -22,15 +22,20 @@
 		<nav>
 			<ul class="clearfix">
 				<li><a href="/" title="Home">Home</a></li>
-				<li><a href="/archives" title="Archives">Archives</a></li>
+				<li><a href="/archive" title="Archives">Archives</a></li>
 				<li><a href="/page/about" title="About">About</a></li>
 				<li><a href="/page/license" title="License">License</a></li>
 			</ul>
 		</nav>
 {{end}}
 
-{{define "Archives"}}
+{{define "Archive"}}
 	<h1>Archives</h1>
+	<ul>
+	{{range .}}
+		<li><a href="{{.Slug}}" title="{{.Title}}">{{.Title}}</a></li>
+	{{end}}
+	</ul>
 {{end}}
 
 {{define "Footer"}}

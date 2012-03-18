@@ -1,5 +1,25 @@
 [
 	{
+		"Title": "Another Post",
+		"Slug": "another-post",
+		"Date": "25 January 2012",
+		"Keywords": "Some keywords",
+		"Description": "A short descriptions",
+		"Tags": [
+			"Business"
+		]
+	},
+	{
+		"Title": "My Second Post",
+		"Slug": "my-second-post",
+		"Date": "25 January 2012",
+		"Keywords": "Some keywords",
+		"Description": "A short descriptions",
+		"Tags": [
+			"Business"
+		]
+	},
+	{
 		"Title": "Hello World",
 		"Slug": "hello-world",
 		"Date": "25 January 2012",
