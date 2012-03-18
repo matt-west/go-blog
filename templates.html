@@ -3,7 +3,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>{{.Title |html}} // GO-Web Framework</title>
+	<title>{{.Title |html}} // GO-Blog Framework</title>
 
 	<meta name="keywords" content="{{.Keywords |html}}">
 	<meta name="description" content="{{.Description |html}}">
@@ -13,7 +13,7 @@
 <body>
 	<div id="container" class="clearfix">
 		<header class="clearfix">
-			<h1><a href="/" title="GO-Web Framework">GO-Web Framework</a></h1>
+			<h1><a href="/" title="GO-Blog Framework">GO-Blog Framework</a></h1>
 			{{template "Nav"}}
 		</header>
 {{end}}
@@ -22,15 +22,20 @@
 		<nav>
 			<ul class="clearfix">
 				<li><a href="/" title="Home">Home</a></li>
-				<li><a href="/about" title="About">About</a></li>
-				<li><a href="/license" title="License">License</a></li>
+				<li><a href="/archives" title="Archives">Archives</a></li>
+				<li><a href="/page/about" title="About">About</a></li>
+				<li><a href="/page/license" title="License">License</a></li>
 			</ul>
 		</nav>
 {{end}}
 
+{{define "Archives"}}
+	<h1>Archives</h1>
+{{end}}
+
 {{define "Footer"}}
 		<footer>
-			Powered by <a href="https://github.com/matt-west/go-web" title="GO-Web" target="_blank">GO-Web</a>
+			Powered by <a href="https://github.com/matt-west/go-blog" title="GO-Blog" target="_blank">GO-Blog</a>
 		</footer>
 	</div>
 </body>
