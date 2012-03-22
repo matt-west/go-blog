@@ -27,7 +27,7 @@ const assetPath = len("/")
 const pagePath = len("/page/")
 const postPath = len("/")
 
-const maxPosts = 2 // Number posts to display on homepage
+const maxPosts = 10 // Number posts to display on homepage
 
 // Pages
 var pages = make(map[string]*Page)
@@ -154,6 +154,9 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		errorTemplates.Execute(w, "505", nil)
 		return
 	}
+
+	// Comments
+	layoutTemplates.Execute(w, "Comments", nil)
 
 	// Footer
 	layoutTemplates.Execute(w, "Footer", nil)
