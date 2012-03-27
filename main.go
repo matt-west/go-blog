@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"text/template"
 )
@@ -56,6 +54,7 @@ var postTemplates = make(map[string]*template.Template)
 // Templates
 var layoutTemplates *template.Template
 var errorTemplates *template.Template
+var rssTemplate *template.Template
 var sidebarAssets *Sidebar
 
 // Tags
@@ -135,8 +134,9 @@ func loadPosts() {
 
 // Load Layout and Error Templates
 func loadTemplates() {
-	layoutTemplates = template.Must(template.ParseFiles("templates.html"))
+	layoutTemplates = template.Must(template.ParseFiles("./templates/layouts.html"))
 	errorTemplates = template.Must(template.ParseFiles("./errors/404.html", "./errors/505.html"))
+	rssTemplate = template.Must(template.ParseFiles("./templates/rss.xml"))
 }
 
 // Page Handler Constructs and Serves Pages
@@ -293,15 +293,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func rssHandler(w http.ResponseWriter, r *http.Request) {
-
-	for i := 0; i < len(postsJSON); i++ {
-		p, err := xml.MarshalIndent(posts[postsJSON[i].Title], "  ", "    ")
-		if err != nil {
-			panic("Error generating XML")
-		}
-
-		log.Println(p)
-	}
+	w.Header().Set("Content-Type", "text/xml")
+	rssTemplate.Execute(w, postsJSON)
 }
 
 // Starts Server and Routes Requests

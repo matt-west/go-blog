@@ -4,7 +4,7 @@
 		"Slug": "another-post",
 		"Date": "25 January 2012",
 		"Keywords": "Some keywords",
-		"Description": "A short descriptions",
+		"Description": "This is a description for another post.",
 		"Tags": [
 			"Business"
 		]
@@ -14,7 +14,7 @@
 		"Slug": "my-second-post",
 		"Date": "25 January 2012",
 		"Keywords": "Some keywords",
-		"Description": "A short descriptions",
+		"Description": "This is a description for my second post.",
 		"Tags": [
 			"Business"
 		]
@@ -24,7 +24,7 @@
 		"Slug": "hello-world",
 		"Date": "25 January 2012",
 		"Keywords": "Some keywords",
-		"Description": "A short descriptions",
+		"Description": "This is a description for my hello world post.",
 		"Tags": [
 			"Business",
 			"Hello"
