@@ -297,7 +297,7 @@ func rssHandler(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < len(postsJSON); i++ {
 		p, err := xml.MarshalIndent(posts[postsJSON[i].Title], "  ", "    ")
 		if err != nil {
-			panic("Error generatin XML")
+			panic("Error generating XML")
 		}
 
 		log.Println(p)
