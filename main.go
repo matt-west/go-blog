@@ -1,10 +1,12 @@
 package main
 
 import (
-	"http"
-	"template"
+	"encoding/json"
+	"encoding/xml"
 	"io/ioutil"
-	"json"
+	"log"
+	"net/http"
+	"text/template"
 )
 
 type Page struct {
@@ -52,8 +54,8 @@ var postsJSON []Post // Need this so that there is an ordered list of posts
 var postTemplates = make(map[string]*template.Template)
 
 // Templates
-var layoutTemplates *template.Set
-var errorTemplates *template.Set
+var layoutTemplates *template.Template
+var errorTemplates *template.Template
 var sidebarAssets *Sidebar
 
 // Tags
@@ -108,7 +110,7 @@ func loadPages() {
 	}
 
 	for _, tmpl := range pages {
-		t := template.Must(template.ParseFile("./pages/" + tmpl.Slug + ".html"))
+		t := template.Must(template.ParseFiles("./pages/" + tmpl.Slug + ".html"))
 		pageTemplates[tmpl.Slug] = t
 	}
 }
@@ -126,15 +128,15 @@ func loadPosts() {
 	}
 
 	for _, tmpl := range posts {
-		t := template.Must(template.ParseFile("./posts/" + tmpl.Slug + ".html"))
+		t := template.Must(template.ParseFiles("./posts/" + tmpl.Slug + ".html"))
 		postTemplates[tmpl.Slug] = t
 	}
 }
 
 // Load Layout and Error Templates
 func loadTemplates() {
-	layoutTemplates = template.SetMust(template.ParseSetFiles("templates.html"))
-	errorTemplates = template.SetMust(template.ParseSetFiles("./errors/404.html", "./errors/505.html"))
+	layoutTemplates = template.Must(template.ParseFiles("templates.html"))
+	errorTemplates = template.Must(template.ParseFiles("./errors/404.html", "./errors/505.html"))
 }
 
 // Page Handler Constructs and Serves Pages
@@ -151,7 +153,7 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	_, ok := pages[slug]
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
-		errorTemplates.Execute(w, "404", nil)
+		errorTemplates.ExecuteTemplate(w, "404", nil)
 		return
 	}
 
@@ -159,21 +161,21 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	p := pages[slug]
 
 	// Header
-	layoutTemplates.Execute(w, "Header", p)
+	layoutTemplates.ExecuteTemplate(w, "Header", p)
 
 	// Sidebar
-	layoutTemplates.Execute(w, "Sidebar", sidebarAssets)
+	layoutTemplates.ExecuteTemplate(w, "Sidebar", sidebarAssets)
 
 	// Page Template
 	err := pageTemplates[slug].Execute(w, nil)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		errorTemplates.Execute(w, "505", nil)
+		errorTemplates.ExecuteTemplate(w, "505", nil)
 		return
 	}
 
 	// Footer
-	layoutTemplates.Execute(w, "Footer", nil)
+	layoutTemplates.ExecuteTemplate(w, "Footer", nil)
 }
 
 // Post Handler
@@ -189,7 +191,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	_, ok := posts[slug]
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
-		errorTemplates.Execute(w, "404", nil)
+		errorTemplates.ExecuteTemplate(w, "404", nil)
 		return
 	}
 
@@ -197,24 +199,24 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	p := posts[slug]
 
 	// Header
-	layoutTemplates.Execute(w, "Header", p)
+	layoutTemplates.ExecuteTemplate(w, "Header", p)
 
 	// Sidebar
-	layoutTemplates.Execute(w, "Sidebar", sidebarAssets)
+	layoutTemplates.ExecuteTemplate(w, "Sidebar", sidebarAssets)
 
 	// Post Template
 	err := postTemplates[slug].Execute(w, p)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		errorTemplates.Execute(w, "505", nil)
+		errorTemplates.ExecuteTemplate(w, "505", nil)
 		return
 	}
 
 	// Comments
-	layoutTemplates.Execute(w, "Comments", nil)
+	layoutTemplates.ExecuteTemplate(w, "Comments", nil)
 
 	// Footer
-	layoutTemplates.Execute(w, "Footer", nil)
+	layoutTemplates.ExecuteTemplate(w, "Footer", nil)
 }
 
 // Asset Handler Serves CSS, JS and Images
@@ -226,16 +228,16 @@ func archiveHandler(w http.ResponseWriter, r *http.Request) {
 	p := Page{"archive", "Archive", "", ""}
 
 	// Header
-	layoutTemplates.Execute(w, "Header", p)
+	layoutTemplates.ExecuteTemplate(w, "Header", p)
 
 	// Sidebar
-	layoutTemplates.Execute(w, "Sidebar", sidebarAssets)
+	layoutTemplates.ExecuteTemplate(w, "Sidebar", sidebarAssets)
 
 	// Archives
-	layoutTemplates.Execute(w, "Archive", postsJSON)
+	layoutTemplates.ExecuteTemplate(w, "Archive", postsJSON)
 
 	// Footer
-	layoutTemplates.Execute(w, "Footer", p)
+	layoutTemplates.ExecuteTemplate(w, "Footer", p)
 }
 
 func tagHandler(w http.ResponseWriter, r *http.Request) {
@@ -249,34 +251,34 @@ func tagHandler(w http.ResponseWriter, r *http.Request) {
 	_, ok := tags[slug]
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
-		errorTemplates.Execute(w, "404", nil)
+		errorTemplates.ExecuteTemplate(w, "404", nil)
 		return
 	}
 
 	p := &Page{"/tag/" + slug, "Posts Tagged #" + slug, "", ""}
 
 	// Header
-	layoutTemplates.Execute(w, "Header", p)
+	layoutTemplates.ExecuteTemplate(w, "Header", p)
 
 	// Sidebar
-	layoutTemplates.Execute(w, "Sidebar", sidebarAssets)
+	layoutTemplates.ExecuteTemplate(w, "Sidebar", sidebarAssets)
 
 	for _, tmpl := range tags[slug].Posts {
 		postTemplates[tmpl.Slug].Execute(w, posts[tmpl.Slug])
 	}
 
 	// Footer
-	layoutTemplates.Execute(w, "Footer", p)
+	layoutTemplates.ExecuteTemplate(w, "Footer", p)
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	p := pages["index"]
 
 	// Header
-	layoutTemplates.Execute(w, "Header", p)
+	layoutTemplates.ExecuteTemplate(w, "Header", p)
 
 	// Sidebar
-	layoutTemplates.Execute(w, "Sidebar", sidebarAssets)
+	layoutTemplates.ExecuteTemplate(w, "Sidebar", sidebarAssets)
 
 	// Show Recent Posts
 	for i, tmpl := range postsJSON {
@@ -287,7 +289,19 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Footer
-	layoutTemplates.Execute(w, "Footer", p)
+	layoutTemplates.ExecuteTemplate(w, "Footer", p)
+}
+
+func rssHandler(w http.ResponseWriter, r *http.Request) {
+
+	for i := 0; i < len(postsJSON); i++ {
+		p, err := xml.MarshalIndent(posts[postsJSON[i].Title], "  ", "    ")
+		if err != nil {
+			panic("Error generatin XML")
+		}
+
+		log.Println(p)
+	}
 }
 
 // Starts Server and Routes Requests
@@ -296,6 +310,7 @@ func main() {
 	http.HandleFunc("/page/", pageHandler)
 	http.HandleFunc("/tag/", tagHandler)
 	http.HandleFunc("/assets/", assetHandler)
+	http.HandleFunc("/rss", rssHandler)
 	http.HandleFunc("/", postHandler)
 	http.ListenAndServe(":9981", nil)
 }
