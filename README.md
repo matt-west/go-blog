@@ -4,6 +4,8 @@ A simple template based blog framework. Built ontop of go-web.
 
 ## Instructions
 
+Built for GO version: `weekly.2012-03-22`
+
 Pages go in the `/pages/` folder.
 Posts go in the `/posts/` folder.
 
