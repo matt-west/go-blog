@@ -1,6 +1,16 @@
 <article>
-	<h1>My Second Post</h1>
-	<p>
-		Testing stuff.
-	</p>
+	<header>
+		<h1><a href="/{{.Slug |html}}" title="{{.Title |html}}">{{.Title |html}}</a></h1>
+	</header>
+	<div>
+		<p>
+			Testing stuff.
+		</p>
+	</div>
+	<footer>
+		<time datetime="{{.MachineDate |html}}">Posted on {{.Date |html}}</time> | Tagged: 
+		{{range .Tags}}
+			<a href="/tag/{{.}}">#{{.}}</a>&nbsp;
+		{{end}}
+	</footer>
 </article>
