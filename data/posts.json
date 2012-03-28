@@ -3,6 +3,7 @@
 		"Title": "Another Post",
 		"Slug": "another-post",
 		"Date": "25 January 2012",
+		"MachineDate": "2012-01-25",
 		"Keywords": "Some keywords",
 		"Description": "This is a description for another post.",
 		"Tags": [
@@ -13,6 +14,7 @@
 		"Title": "My Second Post",
 		"Slug": "my-second-post",
 		"Date": "25 January 2012",
+		"MachineDate": "2012-01-25",
 		"Keywords": "Some keywords",
 		"Description": "This is a description for my second post.",
 		"Tags": [
@@ -23,6 +25,7 @@
 		"Title": "Hello World",
 		"Slug": "hello-world",
 		"Date": "25 January 2012",
+		"MachineDate": "2012-01-25",
 		"Keywords": "Some keywords",
 		"Description": "This is a description for my hello world post.",
 		"Tags": [

@@ -60,6 +60,9 @@ var sidebarAssets *Sidebar
 // Tags
 var tags = make(map[string]*Tag)
 
+// Static Assets i.e. Favicons or Humans.txt
+var staticAssets = []string{"humans.txt","favicon.ico"}
+
 // Init Function to Load Template Files and JSON Dict to Cache
 func init() {
 	loadTemplates()
@@ -180,6 +183,14 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 
 // Post Handler
 func postHandler(w http.ResponseWriter, r *http.Request) {
+	// Check to see if the request is after a static asset
+	for _, asset := range staticAssets {
+		if asset == r.URL.Path[1:] {
+			http.ServeFile(w, r, asset)
+			return
+		}
+	}
+
 	// Get the post slug, use 'index' if no slug is present
 	slug := r.URL.Path[postPath:]
 	if slug == "" {
