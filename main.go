@@ -135,7 +135,7 @@ func loadPosts() {
 // Load Layout and Error Templates
 func loadTemplates() {
 	layoutTemplates = template.Must(template.ParseFiles("./templates/layouts.html"))
-	errorTemplates = template.Must(template.ParseFiles("./errors/404.html", "./errors/505.html"))
+	errorTemplates = template.Must(template.ParseFiles("./templates/errors/404.html", "./templates/errors/505.html"))
 	rssTemplate = template.Must(template.ParseFiles("./templates/rss.xml"))
 }
 
