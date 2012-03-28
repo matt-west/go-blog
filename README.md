@@ -1,13 +1,12 @@
 # Go-Blog
 
-A simple template based blog framework. Built ontop of go-web.
+A simple template based blog framework.
 
 ## Instructions
 
 Built for GO version: `weekly.2012-03-22`
 
-Pages go in the `/pages/` folder.
-Posts go in the `/posts/` folder.
+See the [Documentation](https://github.com/matt-west/go-blog/wiki/Getting-Started) or [Getting Started](https://github.com/matt-west/go-blog/wiki/Documentation) pages in the wiki.
 
 ## Notes
 
