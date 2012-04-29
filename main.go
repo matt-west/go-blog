@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"text/template"
 )
@@ -56,10 +54,14 @@ var postTemplates = make(map[string]*template.Template)
 // Templates
 var layoutTemplates *template.Template
 var errorTemplates *template.Template
+var rssTemplate *template.Template
 var sidebarAssets *Sidebar
 
 // Tags
 var tags = make(map[string]*Tag)
+
+// Static Assets i.e. Favicons or Humans.txt
+var staticAssets = []string{"humans.txt","favicon.ico"}
 
 // Init Function to Load Template Files and JSON Dict to Cache
 func init() {
@@ -135,8 +137,9 @@ func loadPosts() {
 
 // Load Layout and Error Templates
 func loadTemplates() {
-	layoutTemplates = template.Must(template.ParseFiles("templates.html"))
-	errorTemplates = template.Must(template.ParseFiles("./errors/404.html", "./errors/505.html"))
+	layoutTemplates = template.Must(template.ParseFiles("./templates/layouts.html"))
+	errorTemplates = template.Must(template.ParseFiles("./templates/errors/404.html", "./templates/errors/505.html"))
+	rssTemplate = template.Must(template.ParseFiles("./templates/rss.xml"))
 }
 
 // Page Handler Constructs and Serves Pages
@@ -180,6 +183,14 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 
 // Post Handler
 func postHandler(w http.ResponseWriter, r *http.Request) {
+	// Check to see if the request is after a static asset
+	for _, asset := range staticAssets {
+		if asset == r.URL.Path[1:] {
+			http.ServeFile(w, r, asset)
+			return
+		}
+	}
+
 	// Get the post slug, use 'index' if no slug is present
 	slug := r.URL.Path[postPath:]
 	if slug == "" {
@@ -293,15 +304,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func rssHandler(w http.ResponseWriter, r *http.Request) {
-
-	for i := 0; i < len(postsJSON); i++ {
-		p, err := xml.MarshalIndent(posts[postsJSON[i].Title], "  ", "    ")
-		if err != nil {
-			panic("Error generatin XML")
-		}
-
-		log.Println(p)
-	}
+	w.Header().Set("Content-Type", "text/xml")
+	rssTemplate.Execute(w, postsJSON)
 }
 
 // Starts Server and Routes Requests
