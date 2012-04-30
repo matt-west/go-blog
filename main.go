@@ -5,7 +5,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"text/template"
+	"log"
 )
+
+type Config struct {
+	Title	string
+	URL string
+}
 
 type Page struct {
 	Slug        string
@@ -42,6 +48,9 @@ const postPath = len("/")
 
 const maxPosts = 10 // Number posts to display on homepage
 
+// Config
+var config = new(Config)
+
 // Pages
 var pages = make(map[string]*Page)
 var pageTemplates = make(map[string]*template.Template)
@@ -55,7 +64,6 @@ var postTemplates = make(map[string]*template.Template)
 var layoutTemplates *template.Template
 var errorTemplates *template.Template
 var rssTemplate *template.Template
-var sitemapTemplate *template.Template
 var sidebarAssets *Sidebar
 
 // Tags
@@ -66,9 +74,19 @@ var staticAssets = []string{"humans.txt","favicon.ico"}
 
 // Init Function to Load Template Files and JSON Dict to Cache
 func init() {
+	log.Println("Loading Config")
+	loadConfig()
+	
+	log.Println("Loading Templates")
 	loadTemplates()
+
+	log.Println("Loading Pages")
 	loadPages()
+
+	log.Println("Loading Posts")
 	loadPosts()
+
+	log.Println("Loading Tags")
 	loadTags()
 
 	n := 5
@@ -78,6 +96,16 @@ func init() {
 	}
 
 	sidebarAssets = &Sidebar{postsJSON[0:n], tags, pages}
+}
+
+// Load the Config File (config/app.json)
+func loadConfig() {
+	configRaw, _ := ioutil.ReadFile("config/app.json")
+	err := json.Unmarshal(configRaw, config)
+
+	if err != nil {
+		panic("Could not parse config file!")
+	}
 }
 
 // Load The Tags Map
@@ -141,7 +169,6 @@ func loadTemplates() {
 	layoutTemplates = template.Must(template.ParseFiles("./templates/layouts.html"))
 	errorTemplates = template.Must(template.ParseFiles("./templates/errors/404.html", "./templates/errors/505.html"))
 	rssTemplate = template.Must(template.ParseFiles("./templates/rss.xml"))
-	sitemapTemplate = template.Must(template.ParseFiles("./templates/sitemap.xml"))
 }
 
 // Page Handler Constructs and Serves Pages
@@ -316,11 +343,11 @@ func sitemapHandler(w http.ResponseWriter, r *http.Request) {
 	sitemap := "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
 
 	for _, page := range pages {
-		sitemap += "<url><loc>http://example.com/page/" + page.Slug + "</loc></url>\n"
+		sitemap += "<url><loc>" + config.URL + "/page/" + page.Slug + "</loc></url>\n"
 	}
 
 	for _, post := range postsJSON {
-		sitemap += "<url><loc>http://example.com/" + post.Slug + "</loc><lastmod>" + post.MachineDate + "</lastmod></url>\n"
+		sitemap += "<url><loc>" + config.URL + post.Slug + "</loc><lastmod>" + post.MachineDate + "</lastmod></url>\n"
 	}
 
 	sitemap += "</urlset>"
@@ -331,6 +358,8 @@ func sitemapHandler(w http.ResponseWriter, r *http.Request) {
 
 // Starts Server and Routes Requests
 func main() {
+	log.Println("Starting: " + config.Title)
+
 	http.HandleFunc("/archive", archiveHandler)
 	http.HandleFunc("/page/", pageHandler)
 	http.HandleFunc("/tag/", tagHandler)
@@ -338,5 +367,9 @@ func main() {
 	http.HandleFunc("/rss", rssHandler)
 	http.HandleFunc("/sitemap", sitemapHandler)
 	http.HandleFunc("/", postHandler)
-	http.ListenAndServe(":9981", nil)
+
+	err := http.ListenAndServe(":9981", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
