@@ -55,6 +55,7 @@ var postTemplates = make(map[string]*template.Template)
 var layoutTemplates *template.Template
 var errorTemplates *template.Template
 var rssTemplate *template.Template
+var sitemapTemplate *template.Template
 var sidebarAssets *Sidebar
 
 // Tags
@@ -140,6 +141,7 @@ func loadTemplates() {
 	layoutTemplates = template.Must(template.ParseFiles("./templates/layouts.html"))
 	errorTemplates = template.Must(template.ParseFiles("./templates/errors/404.html", "./templates/errors/505.html"))
 	rssTemplate = template.Must(template.ParseFiles("./templates/rss.xml"))
+	sitemapTemplate = template.Must(template.ParseFiles("./templates/sitemap.xml"))
 }
 
 // Page Handler Constructs and Serves Pages
@@ -308,6 +310,25 @@ func rssHandler(w http.ResponseWriter, r *http.Request) {
 	rssTemplate.Execute(w, postsJSON)
 }
 
+func sitemapHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/xml")
+
+	sitemap := "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
+
+	for _, page := range pages {
+		sitemap += "<url><loc>http://example.com/page/" + page.Slug + "</loc></url>\n"
+	}
+
+	for _, post := range postsJSON {
+		sitemap += "<url><loc>http://example.com/" + post.Slug + "</loc><lastmod>" + post.MachineDate + "</lastmod></url>\n"
+	}
+
+	sitemap += "</urlset>"
+
+	// Write 
+	w.Write([]byte(sitemap))
+}
+
 // Starts Server and Routes Requests
 func main() {
 	http.HandleFunc("/archive", archiveHandler)
@@ -315,6 +336,7 @@ func main() {
 	http.HandleFunc("/tag/", tagHandler)
 	http.HandleFunc("/assets/", assetHandler)
 	http.HandleFunc("/rss", rssHandler)
+	http.HandleFunc("/sitemap", sitemapHandler)
 	http.HandleFunc("/", postHandler)
 	http.ListenAndServe(":9981", nil)
 }
