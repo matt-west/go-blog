@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+{{$url := .Config.URL}}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	{{range .Pages}}
+		<url>
+			<loc>{{$url}}/page/{{.Slug}}</loc>
+		</url>
+	{{end}}
+	{{range .Posts}}
+		<url>
+			<loc>{{$url}}/{{.Slug}}</loc>
+			<lastmod>{{.MachineDate}}</lastmod>
+		</url>
+	{{end}}
+</urlset>

@@ -50,6 +50,12 @@ type RSS struct {
 	Posts  []Post
 }
 
+type Sitemap struct {
+	Config *Config
+	Pages  []Page
+	Posts  []Post
+}
+
 const assetPath = len("/")
 const pagePath = len("/page/")
 const tagPath = len("/tag/")
@@ -62,6 +68,7 @@ var config = new(Config)
 
 // Pages
 var pages = make(map[string]*Page)
+var pagesJSON []Page
 var pageTemplates = make(map[string]*template.Template)
 
 // Posts
@@ -73,6 +80,7 @@ var postTemplates = make(map[string]*template.Template)
 var layoutTemplates *template.Template
 var errorTemplates *template.Template
 var rssTemplate *template.Template
+var sitemapTemplate *template.Template
 var sidebarAssets *Sidebar
 
 // Tags
@@ -139,7 +147,6 @@ func loadTags() {
 // Load Pages Dict and Templates
 func loadPages() {
 	pagesRaw, _ := ioutil.ReadFile("data/pages.json")
-	var pagesJSON []Page
 	err := json.Unmarshal(pagesRaw, &pagesJSON)
 	if err != nil {
 		panic("Could not parse Pages JSON!")
@@ -178,6 +185,7 @@ func loadTemplates() {
 	layoutTemplates = template.Must(template.ParseFiles("./templates/layouts.html"))
 	errorTemplates = template.Must(template.ParseFiles("./templates/errors/404.html", "./templates/errors/505.html"))
 	rssTemplate = template.Must(template.ParseFiles("./templates/rss.xml"))
+	sitemapTemplate = template.Must(template.ParseFiles("./templates/sitemap.xml"))
 }
 
 // Page Handler Constructs and Serves Pages
@@ -349,21 +357,8 @@ func rssHandler(w http.ResponseWriter, r *http.Request) {
 
 func sitemapHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/xml")
-
-	sitemap := "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
-
-	for _, page := range pages {
-		sitemap += "<url><loc>" + config.URL + "/page/" + page.Slug + "</loc></url>\n"
-	}
-
-	for _, post := range postsJSON {
-		sitemap += "<url><loc>" + config.URL + post.Slug + "</loc><lastmod>" + post.MachineDate + "</lastmod></url>\n"
-	}
-
-	sitemap += "</urlset>"
-
-	// Write 
-	w.Write([]byte(sitemap))
+	sitemap := Sitemap{config, pagesJSON, postsJSON}
+	sitemapTemplate.Execute(w, sitemap)
 }
 
 // Starts Server and Routes Requests
