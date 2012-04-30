@@ -9,8 +9,12 @@ import (
 )
 
 type Config struct {
-	Title string
-	URL   string
+	URL         string
+	Title       string
+	Description string
+	Lang        string
+	Editor      string
+	Webmaster   string
 }
 
 type Page struct {
@@ -39,6 +43,11 @@ type Sidebar struct {
 	Recent []Post
 	Tags   map[string]*Tag
 	Pages  map[string]*Page
+}
+
+type RSS struct {
+	Config *Config
+	Posts  []Post
 }
 
 const assetPath = len("/")
@@ -334,7 +343,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func rssHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/xml")
-	rssTemplate.Execute(w, postsJSON)
+	rss := RSS{config, postsJSON}
+	rssTemplate.Execute(w, rss)
 }
 
 func sitemapHandler(w http.ResponseWriter, r *http.Request) {

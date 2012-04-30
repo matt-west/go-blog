@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
    <channel>
-      <title>GO-Blog Framework</title>
-      <link>http://example.com</link>
-      <description>The best GO lang blogging framework.</description>
-      <language>en-gb</language>
+      <title>{{.Config.Title}}</title>
+      <link>{{.Config.URL}}</link>
+      <description>{{.Config.Description}}</description>
+      <language>{{.Config.Lang}}</language>
       <generator>GO-Blog Framework</generator>
-      <managingEditor>editor@example.com</managingEditor>
-      <webMaster>webmaster@example.com</webMaster>
-      {{range .}}
+      <managingEditor>{{.Config.Editor}}</managingEditor>
+      <webMaster>{{.Config.Webmaster}}</webMaster>
+      {{range .Posts}}
       <item>
          <title>{{.Title}}</title>
          <link>http://example.com/{{.Slug}}</link>
          <description>{{.Description}}</description>
          {{if .MachineDate}}<pubDate>{{.MachineDate}}</pubDate>{{end}}
-         <guid>http://example.com/{{.Slug}}</guid>
+         <guid>{{.Slug}}</guid>
       </item>
       {{end}}
    </channel>
