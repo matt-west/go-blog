@@ -3,14 +3,14 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"text/template"
-	"log"
 )
 
 type Config struct {
-	Title	string
-	URL string
+	Title string
+	URL   string
 }
 
 type Page struct {
@@ -70,13 +70,13 @@ var sidebarAssets *Sidebar
 var tags = make(map[string]*Tag)
 
 // Static Assets i.e. Favicons or Humans.txt
-var staticAssets = []string{"humans.txt","favicon.ico"}
+var staticAssets = []string{"humans.txt", "favicon.ico"}
 
 // Init Function to Load Template Files and JSON Dict to Cache
 func init() {
 	log.Println("Loading Config")
 	loadConfig()
-	
+
 	log.Println("Loading Templates")
 	loadTemplates()
 
