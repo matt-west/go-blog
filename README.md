@@ -4,7 +4,7 @@ A simple template based blog framework.
 
 ## Instructions
 
-Built for GO version: `weekly.2012-03-22`
+Built for GO version: 1
 
 See the [Documentation](https://github.com/matt-west/go-blog/wiki/Getting-Started) or [Getting Started](https://github.com/matt-west/go-blog/wiki/Documentation) pages in the wiki.
 
